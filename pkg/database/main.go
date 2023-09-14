@@ -9,7 +9,7 @@ import (
 
 func NewDb() *sql.DB {
 	log.Printf("Connecting to database...")
-	db, err := sql.Open("sqlite3", "./data-wilayah.db")
+	db, err := sql.Open("sqlite3", "./pkg/database/data-wilayah.db")
 	if err != nil {
 		log.Fatal(err)
 	}

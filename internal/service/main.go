@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"nik-api/internal/repository"
 	"nik-api/internal/schema"
+	"nik-api/internal/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +27,8 @@ func NewService(repo repository.IRepository, db *sql.DB) *service {
 
 func (service *service) InsertUsers(ctx *gin.Context, users []schema.User) error {
 	tx, err := service.db.Begin()
+
+	defer util.CommitOrRollback(tx)
 
 	if err != nil {
 		return err

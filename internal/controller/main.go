@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"nik-api/internal/schema"
 	"nik-api/internal/service"
 
@@ -31,7 +32,7 @@ func NewController(service service.IService) *controller {
 }
 
 func (c *controller) SubmitIds(ctx *gin.Context) {
-	var users []schema.User
+	var users schema.SubmitIdsRequest
 
 	if err := ctx.ShouldBindJSON(&users); err != nil {
 		ctx.JSON(400, gin.H{
@@ -40,9 +41,10 @@ func (c *controller) SubmitIds(ctx *gin.Context) {
 		return
 	}
 
-	err := c.service.InsertUsers(ctx, users)
-
+	err := c.service.InsertUsers(ctx, users.Data)
+	log.Println(err)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{
 			"message": "Internal Server Error",
 		})
@@ -52,3 +54,21 @@ func (c *controller) SubmitIds(ctx *gin.Context) {
 		"message": "Success",
 	})
 }
+
+func (c *controller) ExtractData(ctx *gin.Context) {}
+
+func (c *controller) ValidateIds(ctx *gin.Context) {}
+
+func (c *controller) GetUsers(ctx *gin.Context) {}
+
+func (c *controller) GetUserById(ctx *gin.Context) {}
+
+func (c *controller) GetUsersByProvinceId(ctx *gin.Context) {}
+
+func (c *controller) GetUsersByCityId(ctx *gin.Context) {}
+
+func (c *controller) GetUsersByDistrictId(ctx *gin.Context) {}
+
+func (c *controller) GetUsersByYearOfBirth(ctx *gin.Context) {}
+
+func (c *controller) GetUsersByGender(ctx *gin.Context) {}

@@ -3,16 +3,16 @@ package database
 import (
 	"database/sql"
 	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func NewDb() *sql.DB {
 	log.Printf("Connecting to database...")
-	db, err := sql.Open("sqlite3", "./sql/data-indonesia.db")
+	db, err := sql.Open("sqlite3", "./data-wilayah.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer db.Close()
 
 	log.Printf("Connected to database")
 	return db

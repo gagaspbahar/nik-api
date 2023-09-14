@@ -104,7 +104,7 @@ func (r *repository) GetUsersByDistrictId(ctx *gin.Context, tx *sql.Tx, district
 }
 
 func (r *repository) GetUsersByYearOfBirth(ctx *gin.Context, tx *sql.Tx, yearOfBirth string) ([]schema.User, error) {
-	query := `SELECT u.id, u.name FROM users u WHERE date_of_birth LIKE ? + '%'`
+	query := `SELECT u.id, u.name FROM users u WHERE date_of_birth LIKE ? || '%'`
 
 	rows, err := tx.QueryContext(ctx, query, yearOfBirth)
 	if err != nil {

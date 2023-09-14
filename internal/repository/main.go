@@ -17,6 +17,9 @@ type IRepository interface {
 	GetUsersByDistrictId(ctx *gin.Context, tx *sql.Tx, districtId int) ([]schema.User, error)
 	GetUsersByYearOfBirth(ctx *gin.Context, tx *sql.Tx, yearOfBirth string) ([]schema.User, error)
 	GetUsersByGender(ctx *gin.Context, tx *sql.Tx, gender string) ([]schema.User, error)
+	GetProvinceByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.Province, error)
+	GetCityByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.City, error)
+	GetDistrictByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.District, error)
 }
 
 type repository struct{}
@@ -56,6 +59,48 @@ func (r *repository) GetCityById(ctx *gin.Context, tx *sql.Tx, id string) (schem
 func (r *repository) GetDistrictById(ctx *gin.Context, tx *sql.Tx, id string) (schema.District, error) {
 	query := `SELECT id, nama FROM t_kecamatan WHERE id = ?`
 	row := tx.QueryRowContext(ctx, query, id)
+
+	var district schema.District
+	err := row.Scan(&district.Id, &district.Name)
+
+	if err != nil {
+		return schema.District{}, err
+	}
+
+	return district, nil
+}
+
+func (r *repository) GetProvinceByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.Province, error) {
+	query := `SELECT id, nama FROM t_provinsi WHERE nama = ?`
+	row := tx.QueryRowContext(ctx, query, name)
+
+	var province schema.Province
+	err := row.Scan(&province.Id, &province.Name)
+
+	if err != nil {
+		return schema.Province{}, err
+	}
+
+	return province, nil
+}
+
+func (r *repository) GetCityByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.City, error) {
+	query := `SELECT id, nama FROM t_kota WHERE nama = ?`
+	row := tx.QueryRowContext(ctx, query, name)
+
+	var city schema.City
+	err := row.Scan(&city.Id, &city.Name)
+
+	if err != nil {
+		return schema.City{}, err
+	}
+
+	return city, nil
+}
+
+func (r *repository) GetDistrictByName(ctx *gin.Context, tx *sql.Tx, name string) (schema.District, error) {
+	query := `SELECT id, nama FROM t_kecamatan WHERE nama = ?`
+	row := tx.QueryRowContext(ctx, query, name)
 
 	var district schema.District
 	err := row.Scan(&district.Id, &district.Name)

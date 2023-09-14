@@ -19,6 +19,7 @@ type IService interface {
 	GetUsersByDistrictId(ctx *gin.Context, districtId int) ([]schema.User, error)
 	GetUsersByYearOfBirth(ctx *gin.Context, yearOfBirth string) ([]schema.User, error)
 	GetUsersByGender(ctx *gin.Context, gender string) ([]schema.User, error)
+	ExtractData(ctx *gin.Context, id string) (schema.ExtractResponse, []error)
 }
 
 type service struct {
@@ -103,7 +104,7 @@ func (service *service) ValidateId(ctx *gin.Context, id string) bool {
 	}
 
 	// Validate District
-	_, err = service.repository.GetDistrictById(ctx, tx, int64(districtId))
+	_, err = service.repository.GetDistrictById(ctx, tx, strconv.Itoa(districtId))
 
 	if err != nil {
 		return false
@@ -131,7 +132,7 @@ func (service *service) GetUsersByProvinceId(ctx *gin.Context, provinceId int) (
 
 	defer util.CommitOrRollback(tx)
 
-	_, err = service.repository.GetProvinceById(ctx, tx, int64(provinceId))
+	_, err = service.repository.GetProvinceById(ctx, tx, strconv.Itoa(provinceId))
 
 	if err != nil {
 		return []schema.User{}, sql.ErrNoRows
@@ -159,7 +160,7 @@ func (service *service) GetUsersByCityId(ctx *gin.Context, cityId int) ([]schema
 
 	defer util.CommitOrRollback(tx)
 
-	_, err = service.repository.GetCityById(ctx, tx, int64(cityId))
+	_, err = service.repository.GetCityById(ctx, tx, strconv.Itoa(cityId))
 
 	if err != nil {
 		return []schema.User{}, sql.ErrNoRows
@@ -187,7 +188,7 @@ func (service *service) GetUsersByDistrictId(ctx *gin.Context, districtId int) (
 
 	defer util.CommitOrRollback(tx)
 
-	_, err = service.repository.GetDistrictById(ctx, tx, int64(districtId))
+	_, err = service.repository.GetDistrictById(ctx, tx, strconv.Itoa(districtId))
 
 	if err != nil {
 		return []schema.User{}, sql.ErrNoRows
@@ -240,4 +241,60 @@ func (service *service) GetUsersByGender(ctx *gin.Context, gender string) ([]sch
 	}
 
 	return users, nil
+}
+
+func (service *service) ExtractData(ctx *gin.Context, id string) (schema.ExtractResponse, []error) {
+	var errs []error
+
+	tx, err := service.db.Begin()
+
+	if err != nil {
+		return schema.ExtractResponse{}, []error{}
+	}
+
+	defer util.CommitOrRollback(tx)
+
+	province, err := service.repository.GetProvinceById(ctx, tx, id[0:2])
+
+	if err != nil {
+		errs = append(errs, errors.New("invalid province id"))
+	}
+
+	city, err := service.repository.GetCityById(ctx, tx, id[0:4])
+
+	if err != nil {
+		errs = append(errs, errors.New("invalid city id"))
+	}
+
+	district, err := service.repository.GetDistrictById(ctx, tx, id[0:6])
+
+	if err != nil {
+		errs = append(errs, errors.New("invalid district id"))
+	}
+
+	dob, err := util.GetDateOfBirthFromId(id)
+
+	if err != nil {
+		errs = append(errs, errors.New("invalid date of birth"))
+	}
+
+	gender, err := util.GetGenderFromId(id)
+
+	if err != nil {
+		errs = append(errs, errors.New("invalid gender"))
+	}
+
+	if len(errs) > 0 {
+		return schema.ExtractResponse{}, errs
+	}
+
+	return schema.ExtractResponse{
+		Province: province.Name,
+		City:     city.Name,
+		District: district.Name,
+		Id:       id,
+		Dob:      dob,
+		Gender:   gender,
+	}, nil
+
 }

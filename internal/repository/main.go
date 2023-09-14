@@ -9,9 +9,9 @@ import (
 
 type IRepository interface {
 	InsertUsers(ctx *gin.Context, tx *sql.Tx, users []schema.UserSchema) error
-	GetProvinceById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.Province, error)
-	GetCityById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.City, error)
-	GetDistrictById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.District, error)
+	GetProvinceById(ctx *gin.Context, tx *sql.Tx, id string) (schema.Province, error)
+	GetCityById(ctx *gin.Context, tx *sql.Tx, id string) (schema.City, error)
+	GetDistrictById(ctx *gin.Context, tx *sql.Tx, id string) (schema.District, error)
 	GetUsersByProvinceId(ctx *gin.Context, tx *sql.Tx, provinceId int) ([]schema.User, error)
 	GetUsersByCityId(ctx *gin.Context, tx *sql.Tx, cityId int) ([]schema.User, error)
 	GetUsersByDistrictId(ctx *gin.Context, tx *sql.Tx, districtId int) ([]schema.User, error)
@@ -25,12 +25,12 @@ func NewRepository() *repository {
 	return &repository{}
 }
 
-func (r *repository) GetProvinceById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.Province, error) {
+func (r *repository) GetProvinceById(ctx *gin.Context, tx *sql.Tx, id string) (schema.Province, error) {
 	query := `SELECT id, nama FROM t_provinsi WHERE id = ?`
 	row := tx.QueryRowContext(ctx, query, id)
 
 	var province schema.Province
-	err := row.Scan(&province.Id, &province.Nama)
+	err := row.Scan(&province.Id, &province.Name)
 
 	if err != nil {
 		return schema.Province{}, err
@@ -39,12 +39,12 @@ func (r *repository) GetProvinceById(ctx *gin.Context, tx *sql.Tx, id int64) (sc
 	return province, nil
 }
 
-func (r *repository) GetCityById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.City, error) {
+func (r *repository) GetCityById(ctx *gin.Context, tx *sql.Tx, id string) (schema.City, error) {
 	query := `SELECT id, nama FROM t_kota WHERE id = ?`
 	row := tx.QueryRowContext(ctx, query, id)
 
 	var city schema.City
-	err := row.Scan(&city.Id, &city.Nama)
+	err := row.Scan(&city.Id, &city.Name)
 
 	if err != nil {
 		return schema.City{}, err
@@ -53,12 +53,12 @@ func (r *repository) GetCityById(ctx *gin.Context, tx *sql.Tx, id int64) (schema
 	return city, nil
 }
 
-func (r *repository) GetDistrictById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.District, error) {
+func (r *repository) GetDistrictById(ctx *gin.Context, tx *sql.Tx, id string) (schema.District, error) {
 	query := `SELECT id, nama FROM t_kecamatan WHERE id = ?`
 	row := tx.QueryRowContext(ctx, query, id)
 
 	var district schema.District
-	err := row.Scan(&district.Id, &district.Nama)
+	err := row.Scan(&district.Id, &district.Name)
 
 	if err != nil {
 		return schema.District{}, err

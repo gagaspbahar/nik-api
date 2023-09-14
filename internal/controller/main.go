@@ -52,7 +52,19 @@ func (c *controller) SubmitIds(ctx *gin.Context) {
 	ctx.JSON(200, util.MakeResponse(200, "Success", nil, nil))
 }
 
-func (c *controller) ExtractData(ctx *gin.Context) {}
+func (c *controller) ExtractData(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	data, err := c.service.ExtractData(ctx, id)
+
+	if err != nil {
+		ctx.JSON(500, util.MakeMultipleErrorResponse(500, "Internal Server Error", err))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, data))
+
+}
 
 func (c *controller) ValidateIds(ctx *gin.Context) {}
 

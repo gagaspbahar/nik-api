@@ -30,15 +30,15 @@ type AreaData struct {
 
 type Province struct {
 	Id   string `json:"id"`
-	Nama string `json:"nama"`
+	Name string `json:"nama"`
 }
 
 type City struct {
 	Id   string `json:"id"`
-	Nama string `json:"nama"`
+	Name string `json:"nama"`
 }
 
 type District struct {
 	Id   string `json:"id"`
-	Nama string `json:"nama"`
+	Name string `json:"nama"`
 }

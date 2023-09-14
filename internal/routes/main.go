@@ -11,7 +11,7 @@ func NewRoute(server *gin.Engine, controller controller.IController) {
 	v1 := api.Group("/v1")
 
 	v1.POST("/submit-ids", controller.SubmitIds)
-	v1.POST("/extract-data", controller.ExtractData)
+	v1.POST("/extract/:id", controller.ExtractData)
 	v1.POST("/validate", controller.ValidateIds)
 
 	users := v1.Group("/users")

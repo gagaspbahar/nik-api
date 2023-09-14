@@ -8,7 +8,15 @@ import (
 )
 
 type IRepository interface {
-	InsertUsers(ctx *gin.Context, tx *sql.Tx, users []schema.User) error
+	InsertUsers(ctx *gin.Context, tx *sql.Tx, users []schema.UserSchema) error
+	GetProvinceById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.Province, error)
+	GetCityById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.City, error)
+	GetDistrictById(ctx *gin.Context, tx *sql.Tx, id int64) (schema.District, error)
+	GetUsersByProvinceId(ctx *gin.Context, tx *sql.Tx, provinceId int) ([]schema.User, error)
+	GetUsersByCityId(ctx *gin.Context, tx *sql.Tx, cityId int) ([]schema.User, error)
+	GetUsersByDistrictId(ctx *gin.Context, tx *sql.Tx, districtId int) ([]schema.User, error)
+	GetUsersByYearOfBirth(ctx *gin.Context, tx *sql.Tx, yearOfBirth string) ([]schema.User, error)
+	GetUsersByGender(ctx *gin.Context, tx *sql.Tx, gender string) ([]schema.User, error)
 }
 
 type repository struct{}

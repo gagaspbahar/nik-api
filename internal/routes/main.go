@@ -21,8 +21,8 @@ func NewRoute(server *gin.Engine, controller controller.IController) {
 		users.GET("/province/:id", controller.GetUsersByProvinceId)
 		users.GET("/city/:id", controller.GetUsersByCityId)
 		users.GET("/district/:id", controller.GetUsersByDistrictId)
-		users.GET("/year/:id", controller.GetUsersByYearOfBirth)
-		users.GET("/gender/:id", controller.GetUsersByGender)
+		users.GET("/year/:year", controller.GetUsersByYearOfBirth)
+		users.GET("/gender/:gender", controller.GetUsersByGender)
 	}
 
 }

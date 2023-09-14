@@ -1,9 +1,12 @@
 package controller
 
 import (
-	"log"
+	"database/sql"
+	"errors"
 	"nik-api/internal/schema"
 	"nik-api/internal/service"
+	"nik-api/internal/util"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,17 +45,11 @@ func (c *controller) SubmitIds(ctx *gin.Context) {
 	}
 
 	err := c.service.InsertUsers(ctx, users.Data)
-	log.Println(err)
 	if err != nil {
-		log.Println(err)
-		ctx.JSON(500, gin.H{
-			"message": "Internal Server Error",
-		})
+		ctx.JSON(500, util.MakeMultipleErrorResponse(500, "Internal Server Error", err))
 		return
 	}
-	ctx.JSON(200, gin.H{
-		"message": "Success",
-	})
+	ctx.JSON(200, util.MakeResponse(200, "Success", nil, nil))
 }
 
 func (c *controller) ExtractData(ctx *gin.Context) {}
@@ -63,12 +60,107 @@ func (c *controller) GetUsers(ctx *gin.Context) {}
 
 func (c *controller) GetUserById(ctx *gin.Context) {}
 
-func (c *controller) GetUsersByProvinceId(ctx *gin.Context) {}
+func (c *controller) GetUsersByProvinceId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	provinceId, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(400, util.MakeResponse(400, "Bad Request", err, nil))
+		return
+	}
 
-func (c *controller) GetUsersByCityId(ctx *gin.Context) {}
+	users, err := c.service.GetUsersByProvinceId(ctx, provinceId)
 
-func (c *controller) GetUsersByDistrictId(ctx *gin.Context) {}
+	if err == sql.ErrNoRows {
+		ctx.JSON(404, util.MakeResponse(404, "Province id not found", nil, nil))
+		return
+	}
 
-func (c *controller) GetUsersByYearOfBirth(ctx *gin.Context) {}
+	if err != nil {
+		ctx.JSON(500, util.MakeResponse(500, "Internal Server Error", err, nil))
+		return
+	}
 
-func (c *controller) GetUsersByGender(ctx *gin.Context) {}
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, users))
+}
+
+func (c *controller) GetUsersByCityId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	cityId, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(400, util.MakeResponse(400, "Bad Request", err, nil))
+		return
+	}
+
+	users, err := c.service.GetUsersByCityId(ctx, cityId)
+
+	if err == sql.ErrNoRows {
+		ctx.JSON(404, util.MakeResponse(404, "City id not found", nil, nil))
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(500, util.MakeResponse(500, "Internal Server Error", err, nil))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, users))
+}
+
+func (c *controller) GetUsersByDistrictId(ctx *gin.Context) {
+	id := ctx.Param("id")
+	districtId, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(400, util.MakeResponse(400, "Bad Request", err, nil))
+		return
+	}
+
+	users, err := c.service.GetUsersByDistrictId(ctx, districtId)
+
+	if err == sql.ErrNoRows {
+		ctx.JSON(404, util.MakeResponse(404, "District id not found", nil, nil))
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(500, util.MakeResponse(500, "Internal Server Error", err, nil))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, users))
+}
+
+func (c *controller) GetUsersByYearOfBirth(ctx *gin.Context) {
+	year := ctx.Param("year")
+
+	users, err := c.service.GetUsersByYearOfBirth(ctx, year)
+
+	if err == sql.ErrNoRows {
+		ctx.JSON(404, util.MakeResponse(404, "Year of birth not found", nil, nil))
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(500, util.MakeResponse(500, "Internal Server Error", err, nil))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, users))
+}
+
+func (c *controller) GetUsersByGender(ctx *gin.Context) {
+	gender := ctx.Param("gender")
+
+	if !(gender == "m" || gender == "f") {
+		ctx.JSON(400, util.MakeResponse(400, "Bad Request", errors.New("invalid gender input"), nil))
+		return
+	}
+
+	users, err := c.service.GetUsersByGender(ctx, gender)
+
+	if err != nil {
+		ctx.JSON(500, util.MakeResponse(500, "Internal Server Error", err, nil))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, users))
+}

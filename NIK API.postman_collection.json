@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "67bfebbf-02ee-488b-a6ad-4556200ea81c",
+		"name": "NIK API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20455642"
+	},
+	"item": [
+		{
+			"name": "Submit IDs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": [\n        {\n            \"name\": \"Benny Eko Hadiman\",\n            \"id\": \"3326160105070023\"\n        },\n        {\n            \"name\": \"Morgens Sahertian\",\n            \"id\": \"3326166004030022\"\n        },\n        {\n            \"name\": \"Sukarno\",\n            \"id\": \"3326160911060005\"\n        },\n        {\n            \"name\": \"Hannah Sidauruk\",\n            \"id\": \"3326160205060014\"\n        },\n        {\n            \"name\": \"Verawati Leony Salim\",\n            \"id\": \"3326160302090001\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{hostname}}/v1/submit-ids",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"submit-ids"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users By Province ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/users/province/33",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"province",
+						"33"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users By City ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/users/city/3326",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"city",
+						"3326"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users By District ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/users/district/332616",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"district",
+						"332616"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users By Gender",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/users/gender/m",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"gender",
+						"m"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users By Year",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/users/year/07",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"year",
+						"07"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Extract Data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/v1/extract/3326160911060005",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"extract",
+						"3326160911060005"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate Ids",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": [\n        {\n            \"id\": \"3326160302090001\",\n            \"dob\": \"2009-02-03\",\n            \"province\": \"JAWA TENGAH\",\n            \"city\": \"KAB. PEKALONGAN\",\n            \"district\": \"Wiradesa\",\n            \"gender\": \"m\"\n        },\n        {\n            \"id\": \"3326160911060005\",\n            \"dob\": \"2006-11-09\",\n            \"province\": \"JAWA TENGAH\",\n            \"city\": \"KAB. PEKALONGAN\",\n            \"district\": \"Wiradesa\",\n            \"gender\": \"m\"\n        }\n\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{hostname}}/v1/validate",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"v1",
+						"validate"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

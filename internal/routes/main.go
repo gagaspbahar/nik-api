@@ -15,8 +15,6 @@ func NewRoute(server *gin.Engine, controller controller.IController) {
 
 	users := v1.Group("/users")
 	{
-		users.GET("/", controller.GetUsers)
-		users.GET("/:id", controller.GetUserById)
 		users.GET("/province/:id", controller.GetUsersByProvinceId)
 		users.GET("/city/:id", controller.GetUsersByCityId)
 		users.GET("/district/:id", controller.GetUsersByDistrictId)

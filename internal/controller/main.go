@@ -15,8 +15,6 @@ type IController interface {
 	SubmitIds(ctx *gin.Context)
 	ExtractData(ctx *gin.Context)
 	ValidateIds(ctx *gin.Context)
-	GetUsers(ctx *gin.Context)
-	GetUserById(ctx *gin.Context)
 	GetUsersByProvinceId(ctx *gin.Context)
 	GetUsersByCityId(ctx *gin.Context)
 	GetUsersByDistrictId(ctx *gin.Context)
@@ -102,10 +100,6 @@ func (c *controller) ValidateIds(ctx *gin.Context) {
 
 	ctx.JSON(200, util.MakeResponse(200, "success", nil, invalidIds))
 }
-
-func (c *controller) GetUsers(ctx *gin.Context) {}
-
-func (c *controller) GetUserById(ctx *gin.Context) {}
 
 func (c *controller) GetUsersByProvinceId(ctx *gin.Context) {
 	id := ctx.Param("id")

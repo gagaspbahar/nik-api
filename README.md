@@ -24,6 +24,12 @@ air
 
 The default port is 8080.
 
+## Technologies
+
+- Go
+- Gin
+- Sqlite3
+
 ## API Documentation
 
 API Documentation is available as a Postman collection JSON.

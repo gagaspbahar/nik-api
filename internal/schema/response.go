@@ -8,3 +8,8 @@ type ExtractResponse struct {
 	District string `json:"district"`
 	Gender   string `json:"gender"`
 }
+
+type ValidateDataResponse struct {
+	Id    string   `json:"id"`
+	Error []string `json:"error"`
+}

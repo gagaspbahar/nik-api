@@ -14,6 +14,7 @@ import (
 type IService interface {
 	InsertUsers(ctx *gin.Context, users []schema.User) []error
 	ValidateId(ctx *gin.Context, id string) bool
+	ValidateIdWithError(ctx *gin.Context, data schema.ValidateDataStruct) (bool, []error)
 	GetUsersByProvinceId(ctx *gin.Context, provinceId int) ([]schema.User, error)
 	GetUsersByCityId(ctx *gin.Context, cityId int) ([]schema.User, error)
 	GetUsersByDistrictId(ctx *gin.Context, districtId int) ([]schema.User, error)
@@ -121,6 +122,138 @@ func (service *service) ValidateId(ctx *gin.Context, id string) bool {
 	}
 
 	return true
+}
+
+func (service *service) ValidateIdWithError(ctx *gin.Context, data schema.ValidateDataStruct) (bool, []error) {
+	var errs []error
+	var flag = true
+	tx, err := service.db.Begin()
+
+	if err != nil {
+		return false, []error{err}
+	}
+
+	defer util.CommitOrRollback(tx)
+
+	// Get 6 digit of id
+
+	id := data.Id
+
+	districtId, err := strconv.Atoi(id[0:6])
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid district id"))
+	}
+
+	// Validate District
+	_, err = service.repository.GetDistrictById(ctx, tx, strconv.Itoa(districtId))
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid district id"))
+	}
+
+	district, err := service.repository.GetDistrictByName(ctx, tx, data.District)
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid district name"))
+	}
+
+	if district.Id != strconv.Itoa(districtId) {
+		flag = false
+		errs = append(errs, errors.New("district id and name mismatch"))
+	}
+
+	cityId, err := strconv.Atoi(id[0:4])
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid city id"))
+	}
+
+	// Validate City
+	_, err = service.repository.GetCityById(ctx, tx, strconv.Itoa(cityId))
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid city id"))
+	}
+
+	city, err := service.repository.GetCityByName(ctx, tx, data.City)
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid city name"))
+	}
+
+	if city.Id != strconv.Itoa(cityId) {
+		flag = false
+		errs = append(errs, errors.New("city id and name mismatch"))
+	}
+
+	provinceId, err := strconv.Atoi(id[0:2])
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid province id"))
+	}
+
+	// Validate Province
+	_, err = service.repository.GetProvinceById(ctx, tx, strconv.Itoa(provinceId))
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid province id"))
+	}
+
+	province, err := service.repository.GetProvinceByName(ctx, tx, data.Province)
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid province name"))
+	}
+
+	if province.Id != strconv.Itoa(provinceId) {
+		flag = false
+		errs = append(errs, errors.New("province id and name mismatch"))
+	}
+
+	genderId, err := strconv.Atoi(id[6:8])
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid gender or date of birth"))
+	}
+
+	// Validate Gender + YoB
+	if !((genderId > 0 && genderId < 32) || (genderId > 40 && genderId < 72)) {
+		flag = false
+		errs = append(errs, errors.New("invalid gender or date of birth"))
+	}
+
+	gender, err := util.GetGenderFromId(id)
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid gender or date of birth"))
+	}
+
+	if gender != data.Gender {
+		flag = false
+		errs = append(errs, errors.New("gender mismatch"))
+	}
+
+	dateOfBirth, err := util.GetDateOfBirthFromId(id)
+
+	if err != nil {
+		flag = false
+		errs = append(errs, errors.New("invalid date of birth"))
+	}
+
+	if !("20"+dateOfBirth == data.Dob || "19"+dateOfBirth == data.Dob) {
+		flag = false
+		errs = append(errs, errors.New("date of birth mismatch"))
+	}
+
+	return flag, errs
 }
 
 func (service *service) GetUsersByProvinceId(ctx *gin.Context, provinceId int) ([]schema.User, error) {

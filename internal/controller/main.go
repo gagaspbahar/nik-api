@@ -63,10 +63,45 @@ func (c *controller) ExtractData(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, util.MakeResponse(200, "success", nil, data))
-
 }
 
-func (c *controller) ValidateIds(ctx *gin.Context) {}
+func (c *controller) ValidateIds(ctx *gin.Context) {
+	var ids schema.ValidateDataRequest
+
+	if err := ctx.ShouldBindJSON(&ids); err != nil {
+		ctx.JSON(400, util.MakeResponse(400, "Bad Request", err, nil))
+		return
+	}
+
+	var validIds []string
+	var invalidIds []schema.ValidateDataResponse
+
+	for _, id := range ids.Data {
+		valid, errors := c.service.ValidateIdWithError(ctx, id)
+
+		var errs []string
+		if len(errors) > 0 {
+			for _, err := range errors {
+				errs = append(errs, err.Error())
+			}
+		}
+		if valid {
+			validIds = append(validIds, id.Id)
+		} else {
+			invalidIds = append(invalidIds, schema.ValidateDataResponse{
+				Id:    id.Id,
+				Error: errs,
+			})
+		}
+	}
+
+	if len(invalidIds) == 0 {
+		ctx.JSON(200, util.MakeResponse(200, "success", nil, nil))
+		return
+	}
+
+	ctx.JSON(200, util.MakeResponse(200, "success", nil, invalidIds))
+}
 
 func (c *controller) GetUsers(ctx *gin.Context) {}
 

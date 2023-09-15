@@ -7,8 +7,7 @@ import (
 )
 
 func NewRoute(server *gin.Engine, controller controller.IController) {
-	api := server.Group("/api")
-	v1 := api.Group("/v1")
+	v1 := server.Group("/v1")
 
 	v1.POST("/submit-ids", controller.SubmitIds)
 	v1.POST("/extract/:id", controller.ExtractData)
